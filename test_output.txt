@@ -1,0 +1,24 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading Industrial Maintenance Knowledge Base...
+
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]
+Loading weights: 100%|##########| 103/103 [00:00<00:00, 1671.74it/s]
+test_distinguishes_different_machine_faults (tests.test_agent.TestAnalyzeIssue.test_distinguishes_different_machine_faults) ... ok
+test_matches_machine_name_and_issue_together_for_water_motor_fire_case (tests.test_agent.TestAnalyzeIssue.test_matches_machine_name_and_issue_together_for_water_motor_fire_case) ... FAIL
+test_returns_priority_and_severity_fields (tests.test_agent.TestAnalyzeIssue.test_returns_priority_and_severity_fields) ... ok
+test_uses_english_only_processing (tests.test_agent.TestAnalyzeIssue.test_uses_english_only_processing) ... ok
+
+======================================================================
+FAIL: test_matches_machine_name_and_issue_together_for_water_motor_fire_case (tests.test_agent.TestAnalyzeIssue.test_matches_machine_name_and_issue_together_for_water_motor_fire_case)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\DELL\OneDrive\Desktop\AI-Industrial-Maintenance-Agent\tests\test_agent.py", line 42, in test_matches_machine_name_and_issue_together_for_water_motor_fire_case
+    self.assertIn('Water Pump', result['matches'][0].get('Machine', ''))
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Water Pump' not found in 'Industrial Motor'
+
+----------------------------------------------------------------------
+Ran 4 tests in 41.460s
+
+FAILED (failures=1)
+Knowledge Base and RAG ready.
