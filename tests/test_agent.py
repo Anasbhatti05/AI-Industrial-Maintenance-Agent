@@ -35,6 +35,12 @@ class TestAnalyzeIssue(unittest.TestCase):
         self.assertIn('Overheating', overheating['matches'][0].get('Fault / Incident', ''))
         self.assertIn('Excessive Vibration', vibration['matches'][0].get('Fault / Incident', ''))
 
+    def test_identifies_blocked_conveyor_belt_issue(self):
+        result = analyze_issue('Conveyor belt is overloaded and blocked', 'Conveyor Belt')
+
+        self.assertTrue(result['matches'])
+        self.assertIn('Blockage / Overloading', result['matches'][0].get('Fault / Incident', ''))
+
     def test_matches_machine_name_and_issue_together_for_water_motor_fire_case(self):
         result = analyze_issue('pani wali motor ko aag lag gai aur overheating ho rahi hai', 'pani wali motor')
 

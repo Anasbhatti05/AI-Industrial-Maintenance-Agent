@@ -95,6 +95,12 @@ def _weight_match_score(issue_text: str, row: pd.Series, equipment_text: str = '
         score += 22.0
     if 'flow' in issue_lower and 'reduced flow' in row_fault:
         score += 22.0
+    if any(token in issue_lower for token in ['blocked', 'blockage', 'clog', 'overload', 'overloaded']) and 'blockage / overloading' in row_fault:
+        score += 60.0
+    if any(token in issue_lower for token in ['blocked', 'blockage', 'clog', 'overload', 'overloaded']) and 'blocked chute' in row_text:
+        score += 35.0
+    if 'belt' in issue_lower and 'belt mistracking' in row_fault:
+        score += 10.0
     if 'pani' in issue_tokens and 'water pump' in row_machine:
         score += 30.0
     if 'water' in issue_tokens and 'water pump' in row_machine:
