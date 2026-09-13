@@ -1,35 +1,36 @@
 AI Industrial Maintenance Agent
 
 Project Summary:
-The AI Industrial Maintenance Agent is an intelligent maintenance assistant designed to help industrial teams diagnose equipment issues faster and more accurately. It uses AI, retrieval-augmented generation (RAG), and historical maintenance data to retrieve manuals, SOPs, and previous issue records, then recommends likely root causes and troubleshooting steps.
+The AI Industrial Maintenance Agent is an intelligent maintenance assistant designed to help industrial teams diagnose equipment issues faster and more accurately. It uses a structured knowledge base, equipment-aware matching logic, and optional AI reasoning to identify likely faults, severity, and recommended actions.
 
 Problem it solves:
-Industrial plants often store maintenance information across many files and systems, making it difficult for technicians to find the right guidance quickly. This leads to longer downtime, higher costs, and slower repairs.
+Industrial plants often store maintenance information across scattered records and manuals, making it difficult for technicians to find the right guidance quickly. This creates downtime, delays repairs, and increases maintenance costs.
 
 How it works:
-1. The technician enters a maintenance issue or machine symptom.
-2. The system searches uploaded manuals, SOPs, and historical records.
-3. It identifies the most relevant documents and similar past cases.
-4. The AI agent suggests probable root causes and repair steps.
-5. It generates a technician-friendly summary and recommendation report.
+1. The technician enters the machine type and issue description.
+2. The system matches the problem against an Excel-based industrial knowledge base.
+3. It uses equipment-specific logic to rank likely faults and severity.
+4. Optional PDF manuals can be uploaded to enrich the diagnosis with extra context.
+5. The app generates a technician-friendly summary with recommended actions.
 
 Why this is valuable:
-It reduces downtime, improves troubleshooting efficiency, and helps teams work with faster, more informed decisions.
+It reduces downtime, improves troubleshooting speed, and helps teams make faster and more informed maintenance decisions.
 
 Technology stack:
-- Frontend: Streamlit or a simple web app
-- Backend: FastAPI
-- LLM: OpenAI / Claude / Gemini
-- RAG: FAISS or Chroma
-- Document processing: PDF parsing and chunking
-- Deployment: Render, Railway, Docker, or a cloud VM
+- Frontend: Streamlit
+- Backend: Python
+- AI reasoning: OpenAI / Groq
+- Knowledge base: Excel workbook
+- Document processing: PDF parsing with PyPDF
+- Retrieval logic: knowledge-base matching and manual enrichment
+- Deployment: Streamlit Cloud + local browser app
 
 MVP scope:
-- Upload manuals and SOPs
-- Enter machine fault description
-- Retrieve relevant documents
-- Show probable root causes
-- Recommend next actions and checklist
+- Enter equipment issue details
+- Match against machine fault records
+- Review recommended causes and troubleshooting steps
+- Upload PDF manuals for additional context
+- Generate a concise diagnostic summary
 
 Final statement:
-This project combines AI and real industrial maintenance workflows to create a practical and valuable business solution.
+This project combines AI-powered reasoning, industrial maintenance knowledge, and a practical web interface to create a useful decision-support tool for plant operations and maintenance teams.

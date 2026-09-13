@@ -44,8 +44,9 @@ The current knowledge base includes real records for:
 - AI reasoning: OpenAI / Groq integration
 - Knowledge base: Excel workbook
 - Document processing: PDF parsing with PyPDF
-- Retrieval logic: rule-based matching + retrieval workflow
-- Deployment: local demo / browser-ready app
+- Retrieval logic: rule-based matching + knowledge-base scoring + manual enrichment
+- Deployment: Streamlit Cloud + local browser app
+- Data handling: Pandas and Excel-based maintenance records
 
 ## High-Level Architecture
 
@@ -73,7 +74,11 @@ flowchart LR
 
 ## Live Demo
 
-The app is running locally in the browser at:
+The app is deployed and publicly accessible at:
+
+- https://ai-industrial-maintenance-agent.streamlit.app/
+
+Local app run:
 
 - http://localhost:8514/
 
@@ -91,14 +96,13 @@ python -m streamlit run app/main.py --server.headless true --server.port 8514
 - Water Pump reduced flow and overheating
 - Conveyor Belt slippage and belt mistracking
 
-## Team Members
+## Team / Project
 
-Add your actual team member names here before presenting:
+This project was developed as a complete AI-powered industrial maintenance assistant prototype and demo application.
 
-- Team Member 1
-- Team Member 2
-- Team Member 3
-- Team Member 4
+- Project: AI Industrial Maintenance Agent
+- Goal: Faster fault detection and maintenance support for industrial equipment
+- Output: Live diagnostic web app with troubleshooting guidance
 
 ## Future Scope
 
@@ -110,4 +114,4 @@ Add your actual team member names here before presenting:
 
 ## Final Note
 
-This project combines industrial maintenance knowledge, AI reasoning, and practical decision support to reduce downtime and improve technician response time.
+This project combines industrial maintenance knowledge, AI reasoning, and practical decision support to reduce downtime and improve technician response time. It helps users identify likely failures in industrial motors, water pumps, and conveyor systems while delivering fast, technician-friendly troubleshooting guidance.

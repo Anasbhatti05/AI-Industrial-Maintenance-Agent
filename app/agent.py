@@ -31,10 +31,63 @@ def _detect_language(text: str) -> str:
 def _normalise(text: str, language: str | None = None) -> str:
     if not text:
         return ''
-    text = text.lower().strip()
+    text = (text or '').lower().strip()
+    text = text.replace('گ', 'g').replace('ڑ', 'r').replace('چ', 'ch').replace('ہ', 'h').replace('ی', 'y').replace('ا', 'a')
+    text = text.replace('آ', 'a').replace('ئ', 'y').replace('ؤ', 'u').replace('ء', '').replace('ں', 'n')
     text = re.sub(r'[^a-z0-9\s]', ' ', text)
     text = re.sub(r'\s+', ' ', text)
     return text
+
+
+def _detect_fault_code(issue_text: str, equipment: str = '', matched_fault: str = '') -> str:
+    issue_lower = (issue_text or '').lower()
+    equipment_lower = (equipment or '').lower()
+    matched_fault_lower = (matched_fault or '').lower()
+
+    if any(token in issue_lower for token in ['aag', 'fire', 'smoke', 'burning', 'burnt', 'flame', 'jal raha', 'jal rahi']):
+        if 'motor' in equipment_lower or 'industrial motor' in equipment_lower:
+            return 'E006'
+        if 'pump' in equipment_lower or 'water pump' in equipment_lower:
+            return 'P006'
+        if 'conveyor' in equipment_lower or 'belt' in equipment_lower:
+            return 'C006'
+        return 'E006'
+
+    if any(token in issue_lower for token in ['block', 'blocked', 'clog', 'overload', 'overloaded']):
+        if 'conveyor' in equipment_lower or 'belt' in equipment_lower:
+            return 'C004'
+        return 'E004'
+
+    if any(token in issue_lower for token in ['overheat', 'heating', 'hot', 'temperature high', 'high temp']):
+        if 'motor' in equipment_lower or 'industrial motor' in equipment_lower:
+            return 'E003'
+        if 'pump' in equipment_lower or 'water pump' in equipment_lower:
+            return 'P003'
+        if 'conveyor' in equipment_lower or 'belt' in equipment_lower:
+            return 'C003'
+        return 'E003'
+
+    if any(token in issue_lower for token in ['vibration', 'vibrating', 'shake', 'misalign', 'alignment']):
+        if 'motor' in equipment_lower or 'industrial motor' in equipment_lower:
+            return 'E002'
+        if 'pump' in equipment_lower or 'water pump' in equipment_lower:
+            return 'P002'
+        if 'conveyor' in equipment_lower or 'belt' in equipment_lower:
+            return 'C002'
+        return 'E002'
+
+    if 'noise' in issue_lower or 'sound' in issue_lower:
+        if 'motor' in equipment_lower or 'industrial motor' in equipment_lower:
+            return 'E001'
+        if 'pump' in equipment_lower or 'water pump' in equipment_lower:
+            return 'P001'
+        if 'conveyor' in equipment_lower or 'belt' in equipment_lower:
+            return 'C001'
+        return 'E001'
+
+    if 'overheating' in matched_fault_lower or 'overheating' in issue_lower:
+        return 'E003'
+    return 'E000'
 
 
 def _weight_match_score(issue_text: str, row: pd.Series, equipment_text: str = '') -> float:
@@ -261,13 +314,21 @@ def _derive_severity_and_priority(issue_text: str, matches: list[dict]) -> tuple
     if severities:
         severity = max(severities, key=lambda item: severity_rank.get(item, 2))
 
-    if 'fire' in issue_lower or 'smoke' in issue_lower or 'sudden shutdown' in issue_lower:
+    fire_markers = ['aag', 'fire', 'smoke', 'burning', 'burnt', 'flame', 'jal raha', 'jal rahi']
+    critical_markers = ['sudden shutdown', 'explosion', 'arc', 'short circuit', 'electrical fire']
+
+    if any(marker in issue_lower for marker in fire_markers) or any(marker in issue_lower for marker in critical_markers):
         severity = 'Critical'
     elif 'overheat' in issue_lower or 'vibration' in issue_lower or 'noise' in issue_lower:
         if severity in {'Low', 'Medium'}:
             severity = 'High'
+    elif 'low flow' in issue_lower or 'slippage' in issue_lower or 'mistrack' in issue_lower:
+        if severity in {'Low'}:
+            severity = 'Medium'
 
     score = {'Low': 35, 'Medium': 55, 'High': 75, 'Critical': 90}[severity]
+    if any(marker in issue_lower for marker in fire_markers):
+        score = min(score + 20, 100)
     if 'overheat' in issue_lower:
         score = min(score + 8, 100)
     if 'safety' in issue_lower:
@@ -390,15 +451,18 @@ def analyze_issue(issue_text: str, equipment: str = '', files: Iterable | None =
         for item in pdf_matches
     ]
     severity, priority_score = _derive_severity_and_priority(raw_issue, result_matches)
+    primary_fault = result_matches[0].get('Fault / Incident', '') if result_matches else ''
+    fault_code = _detect_fault_code(raw_issue, equipment, primary_fault)
 
     knowledge_summary = 'Knowledge base and uploaded manual content were used to identify relevant guidance.' if pdf_matches else 'Knowledge base matched relevant maintenance records and troubleshooting guidance.'
 
     return {
         'equipment': equipment or (matches.iloc[0].get('Machine', '') if 'matches' in locals() and not matches.empty else ''),
         'issue_summary': raw_issue,
+        'fault_code': fault_code,
         'possible_causes': likely_causes[:4],
         'recommended_actions': recommended_actions[:4],
-        'matches': result_matches,
+        'matches': [{**match, 'Fault Code': fault_code} for match in result_matches],
         'knowledge_summary': knowledge_summary,
         'llm_summary': llm_summary,
         'severity': severity,

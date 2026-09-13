@@ -49,6 +49,14 @@ class TestAnalyzeIssue(unittest.TestCase):
         self.assertIn('Overheating', result['matches'][0].get('Fault / Incident', ''))
         self.assertGreaterEqual(result['priority_score'], 80)
 
+    def test_fire_incident_is_critical_with_fault_code(self):
+        result = analyze_issue('Aag lag gai hai! Motor is burning and overheating', 'Industrial Motor')
+
+        self.assertEqual(result['severity'], 'Critical')
+        self.assertGreaterEqual(result['priority_score'], 90)
+        self.assertTrue(result.get('fault_code'))
+        self.assertIn(result.get('fault_code', ''), {'E006', 'M-006', 'E-006'})
+
 
 if __name__ == '__main__':
     unittest.main()
